@@ -10,6 +10,7 @@ spiders = [
     {"name": "磁力链接", "spider_name": "magnet", },
     {"name": "斗图啦", "spider_name": "doutula", },
     {"name": "灯迷", "spider_name": "dm", },
+    {"name": "道一", "spider_name": "do1", },
 ]
 
 

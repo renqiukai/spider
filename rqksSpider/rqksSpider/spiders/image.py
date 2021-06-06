@@ -1,5 +1,6 @@
 import scrapy
 from loguru import logger
+from rqksSpider.items import ImagespiderItem
 
 
 class BtSpider(scrapy.Spider):
@@ -32,7 +33,7 @@ class BtSpider(scrapy.Spider):
             yield scrapy.Request(url=url, callback=self.parse)
 
     def parse(self, response):
-        item = {}
+        item = ImagespiderItem()
         rows = response.xpath(
             '//table[@id="ajaxtable"]//tr[@class="tr3 t_one"]/td/h3/a')
         for row in rows:

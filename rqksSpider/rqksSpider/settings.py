@@ -86,3 +86,9 @@ ROBOTSTXT_OBEY = False
 #HTTPCACHE_DIR = 'httpcache'
 #HTTPCACHE_IGNORE_HTTP_CODES = []
 #HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
+#图片存储位置
+# IMAGES_STORE = 'D:\ImageSpider'
+# #启动图片下载中间件
+# ITEM_PIPELINES = {
+#    'rqksSpider.pipelines.RqksspiderPipeline': 300,
+# }
