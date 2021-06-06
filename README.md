@@ -14,7 +14,7 @@
 ### 爬虫列表
 ----
 |spider name|description|
-|----|----|----|
+|----|----|
 |magnet|取得磁力链接|
 |image|取得图片，输入fid|
 |imdb|imdb top250电影|
