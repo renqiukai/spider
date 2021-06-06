@@ -14,10 +14,17 @@ class BtSpider(scrapy.Spider):
     }
     host_name = "https://z1.1080pgqzz.info/pw/"
 
+    def __init__(self, parms=None, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fid = kwargs.get('fid')
+        self.max_page = kwargs.get('max_page')
+        if not self.max_page:
+            self.max_page = 1000
+
     def start_requests(self):
         page = 1
-        for page in range(1, 10000000):
-            url = f"https://z1.1080pgqzz.info/pw/thread.php?fid=14&page={page}"
+        for page in range(1, int(self.max_page)):
+            url = f"https://z1.1080pgqzz.info/pw/thread.php?fid={self.fid}&page={page}"
             logger.critical({
                 "msg": f"正在处理第{page}页",
                 "url": url,
@@ -31,7 +38,6 @@ class BtSpider(scrapy.Spider):
         for row in rows:
             href = row.xpath("@href").extract_first()
             if href[-4:] == 'html':
-                item["href"] = href
                 item["title"] = row.xpath("text()").extract_first()
                 item["url"] = f"{self.host_name}{href}"
                 yield scrapy.Request(

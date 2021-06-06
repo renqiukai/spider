@@ -44,13 +44,6 @@ class BtSpider(scrapy.Spider):
 
     def parse_detail(self, response):
         item = response.meta
-        imgs = response.xpath('//div[@class="tpc_content"]//img')
-        # if "photo_url" not in item:
-        #     item["photo_url"] = []
-        # for img in imgs:
-        #     img_url = img.xpath('@src').extract_first()
-        #     item["photo_url"].append(img_url)
-
         dl_list = response.xpath('//div[@class="tpc_content"]//a')
         for dl in dl_list:
             dl_url = dl.xpath('@href').extract_first()
