@@ -3,8 +3,8 @@ import scrapy
 import logging
 import re
 from copy import deepcopy
+from loguru import logger
 
-logger = logging.getLogger(__name__)
 
 
 class GushiwenSpider(scrapy.Spider):
@@ -29,7 +29,6 @@ class GushiwenSpider(scrapy.Spider):
             item = {}
             item["poem_type"] = poem_type.xpath('./text()').extract_first()
             item["poem_type_url"] = poem_type.xpath('./@href').extract_first()
-            # logger.warn(item)
             yield scrapy.Request(
                 item["poem_type_url"],
                 callback=self.parse_list,
@@ -47,7 +46,6 @@ class GushiwenSpider(scrapy.Spider):
                 item["author"] = poem.xpath('./text()').extract_first()
                 poem_url = poem.xpath('./a/@href').extract_first()
                 item["poem_url"] = f"{self.host_name}{poem_url}" if "http" not in  poem_url else poem_url
-                # logger.warn(item)
                 yield scrapy.Request(
                     item["poem_url"],
                     callback=self.parse_detail,
@@ -56,11 +54,10 @@ class GushiwenSpider(scrapy.Spider):
 
     def parse_detail(self, response):
         item = response.meta["item"]
-        logger.warn(item)
         content1 = response.xpath(
             "//div[@class='contson']/text()[1]").extract_first()
         content2 = response.xpath(
             "//div[@class='contson']/text()[2]").extract_first()
         item["content"] = f"{content1}{content2}".strip()
-        logger.warn(item)
+        logger.debug(item)
         yield item
