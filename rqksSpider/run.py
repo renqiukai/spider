@@ -12,6 +12,7 @@ spiders = [
     {"name": "灯迷", "spider_name": "dm", },
     {"name": "道一", "spider_name": "do1", },
     {"name": "任姓之家", "spider_name": "ren", },
+    {"name": "bt", "spider_name": "bt", },
 ]
 
 

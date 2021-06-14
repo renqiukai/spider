@@ -18,6 +18,7 @@ class BtSpider(scrapy.Spider):
 
     def start_requests(self):
         page = 1
+        self.max_page = int(self.max_page)
         for page in range(1, self.max_page):
             url = f"https://z1.1080pgqzz.info/pw/thread.php?fid={self.fid}&page={page}"
             logger.critical({
@@ -34,7 +35,6 @@ class BtSpider(scrapy.Spider):
             href = row.xpath("@href").extract_first()
             if href[-4:] == 'html':
                 # item["href"] = href
-                item["title"] = row.xpath("text()").extract_first()
                 item["url"] = f"{self.host_name}{href}"
                 yield scrapy.Request(
                     url=item["url"],
@@ -44,6 +44,7 @@ class BtSpider(scrapy.Spider):
 
     def parse_detail(self, response):
         item = response.meta
+        item["title"] = response.xpath("//span[@id='subject_tpc']/text()").extract_first()
         dl_list = response.xpath('//div[@class="tpc_content"]//a')
         for dl in dl_list:
             dl_url = dl.xpath('@href').extract_first()

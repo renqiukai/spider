@@ -23,3 +23,4 @@
 |doutula|斗图啦|
 |dm|灯迷|
 |do1|do1 case|
+|bt|bt|试图下别人整个网站的图片|

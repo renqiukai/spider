@@ -20,6 +20,7 @@ class BtSpider(scrapy.Spider):
         self.fid = kwargs.get('fid')
         self.max_page = kwargs.get('max_page')
         if not self.max_page:
+            # 最大ID
             self.max_page = 1000
 
     def start_requests(self):
