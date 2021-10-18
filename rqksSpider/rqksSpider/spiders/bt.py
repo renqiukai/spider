@@ -14,15 +14,15 @@ from rqksSpider.items import ImagespiderItem
 
 class BtSpider(scrapy.Spider):
     name = 'bt'
-    allowed_domains = ['1080pgqzz.info']
-    start_urls = ['https://z1.1080pgqzz.info/pw/index.php']
+    allowed_domains = ['f238605b.net']
+    start_urls = ['https://w1.f238605b.net/pw/index.php']
     custom_settings = {
         'LOG_LEVEL': 'WARNING',
         "DEFAULT_REQUEST_HEADERS": {
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.77 Safari/537.36",
         }
     }
-    host_name = "https://z1.1080pgqzz.info/pw/"
+    host_name = "https://w1.f238605b.net/pw/"
 
     def __init__(self, parms=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -32,7 +32,7 @@ class BtSpider(scrapy.Spider):
             self.max_page = 1000
 
     def start_requests(self):
-        url = "https://z1.1080pgqzz.info/pw/index.php"
+        url = "https://w1.f238605b.net/pw/index.php"
         yield scrapy.Request(url=url, callback=self.cat)
 
     def cat(self, response):
@@ -56,7 +56,7 @@ class BtSpider(scrapy.Spider):
             max_page = page_text.replace("  Go ", "")
             item["max_page"] = max_page
             for page in range(1, int(max_page)):
-                url = f"https://z1.1080pgqzz.info/pw/thread.php?fid={item['fid']}&page={page}"
+                url = f"https://w1.f238605b.net/pw/thread.php?fid={item['fid']}&page={page}"
                 logger.critical({
                     "msg": f"正在处理第{page}页",
                     "url": url,

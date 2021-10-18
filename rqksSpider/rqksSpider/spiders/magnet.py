@@ -4,15 +4,15 @@ from loguru import logger
 
 class BtSpider(scrapy.Spider):
     name = 'magnet'
-    allowed_domains = ['1080pgqzz.info', 'downsx.net']
-    start_urls = ['https://z1.1080pgqzz.info/pw/thread.php?fid=18&page=1']
+    allowed_domains = ['f238605b.net', 'downsx.net','bbsxv.xyz']
+    start_urls = ['https://w1.f238605b.net/pw/thread.php?fid=18&page=1']
     custom_settings = {
         'LOG_LEVEL': 'WARNING',
         "DEFAULT_REQUEST_HEADERS": {
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.77 Safari/537.36",
         }
     }
-    host_name = "https://z1.1080pgqzz.info/pw/"
+    host_name = "https://w1.f238605b.net/pw/"
     max_page = 10
     fid = 3
 
@@ -20,7 +20,7 @@ class BtSpider(scrapy.Spider):
         page = 1
         self.max_page = int(self.max_page)
         for page in range(1, self.max_page):
-            url = f"https://z1.1080pgqzz.info/pw/thread.php?fid={self.fid}&page={page}"
+            url = f"https://w1.f238605b.net/pw/thread.php?fid={self.fid}&page={page}"
             logger.critical({
                 "msg": f"正在处理第{page}页",
                 "url": url,
@@ -36,6 +36,7 @@ class BtSpider(scrapy.Spider):
             if href[-4:] == 'html':
                 # item["href"] = href
                 item["url"] = f"{self.host_name}{href}"
+                # logger.debug(item)
                 yield scrapy.Request(
                     url=item["url"],
                     meta=item,
@@ -43,14 +44,17 @@ class BtSpider(scrapy.Spider):
                 )
 
     def parse_detail(self, response):
+        wl = ['bbsxv.xyz','downsx']
         item = response.meta
         item["title"] = response.xpath("//span[@id='subject_tpc']/text()").extract_first()
         dl_list = response.xpath('//div[@class="tpc_content"]//a')
         for dl in dl_list:
             dl_url = dl.xpath('@href').extract_first()
-            if "downsx" in dl_url:
-                item["dl_url"] = dl_url
-                yield scrapy.Request(url=dl_url, callback=self.magnet_url, meta=item, errback=self.error)
+            for n in wl:
+                if n in dl_url:
+                    item["dl_url"] = dl_url
+                    logger.debug(dl_url)
+                    yield scrapy.Request(url=dl_url, callback=self.magnet_url, meta=item, errback=self.error)
 
     def magnet_url(self, response):
         item = response.meta
