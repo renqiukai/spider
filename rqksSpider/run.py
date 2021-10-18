@@ -25,12 +25,12 @@ logger.debug(f"\n{tb}")
 spider_name = input("pls enter spider_name:")
 base_command = f"scrapy crawl {spider_name}"
 encoding = f"-s FEED_EXPORT_ENCODING=UTF-8"
-output = f"-o {spider_name}.json"
+output = f"-o {spider_name}.csv"
 params = ""
 max_page = input("pls enter max page:")
 if spider_name == "image":
     fid = input("pls enter fid:")
-    output = f"-o {spider_name}-{fid}.json"
+    output = f"-o {spider_name}-{fid}.csv"
     params = f"-a fid={fid}"
 if max_page:
     params += f" -a max_page={max_page}"

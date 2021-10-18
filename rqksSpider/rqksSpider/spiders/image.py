@@ -5,15 +5,15 @@ from rqksSpider.items import ImagespiderItem
 
 class BtSpider(scrapy.Spider):
     name = 'image'
-    allowed_domains = ['1080pgqzz.info']
-    start_urls = ['https://z1.1080pgqzz.info/pw/thread.php?fid=14&page=1']
+    allowed_domains = ['f238605b.net']
+    start_urls = ['https://w1.f238605b.net/pw/thread.php?fid=14&page=1']
     custom_settings = {
         'LOG_LEVEL': 'WARNING',
         "DEFAULT_REQUEST_HEADERS": {
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.77 Safari/537.36",
         }
     }
-    host_name = "https://z1.1080pgqzz.info/pw/"
+    host_name = "https://w1.f238605b.net/pw/"
 
     def __init__(self, parms=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -26,7 +26,7 @@ class BtSpider(scrapy.Spider):
     def start_requests(self):
         page = 1
         for page in range(1, int(self.max_page)):
-            url = f"https://z1.1080pgqzz.info/pw/thread.php?fid={self.fid}&page={page}"
+            url = f"{self.host_name}thread.php?fid={self.fid}&page={page}"
             logger.critical({
                 "msg": f"正在处理第{page}页",
                 "url": url,
@@ -42,6 +42,8 @@ class BtSpider(scrapy.Spider):
             if href[-4:] == 'html':
                 item["title"] = row.xpath("text()").extract_first()
                 item["url"] = f"{self.host_name}{href}"
+                logger.debug(item)
+
                 yield scrapy.Request(
                     url=item["url"],
                     meta=item,
@@ -53,9 +55,16 @@ class BtSpider(scrapy.Spider):
         imgs = response.xpath('//div[@class="tpc_content"]//img')
         if "photo_url" not in item:
             item["photo_url"] = []
-
+        item["tid"] = self.tid(item["url"])
         for img in imgs:
             img_url = img.xpath('@src').extract_first()
             item["photo_url"].append(img_url)
         logger.debug(item)
         yield item
+
+    def tid(self, url):
+        a = url.split("/")
+        if a:
+            b = a[-1].split(".")
+            if b:
+                return b[0]
