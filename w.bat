@@ -1,0 +1,2 @@
+cd rqksSpider
+scrapy crawl tianqihoubao

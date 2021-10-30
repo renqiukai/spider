@@ -7,13 +7,24 @@
 # useful for handling different item types with a single interface
 from itemadapter import ItemAdapter
 import scrapy
+from loguru import logger
+from pymongo import MongoClient
 
 
 class RqksspiderPipeline:
+    def __init__(self) -> None:
+        connection_string = 'mongodb://admin:cjdg123456@cloud.renqiukai.com:27017/rqk?authSource=admin'
+        self.client = MongoClient(connection_string)
+        self.db = self.client["spider"]
+
     def process_item(self, item, spider):
         if spider.name == "image":
-            for image_url in item['photo_url']:
-                yield image_url
+            self.db["卡通漫画"].insert_one(item)
+        elif spider.name == "tianqihoubao":
+            item.pop("_id") if "_id" in item else None
+            self.db["tianqihoubao"].insert_one(item)
+        else:
+            pass
         return item
 
 

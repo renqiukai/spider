@@ -55,6 +55,11 @@ class BtSpider(scrapy.Spider):
                     item["dl_url"] = dl_url
                     logger.debug(dl_url)
                     yield scrapy.Request(url=dl_url, callback=self.magnet_url, meta=item, errback=self.error)
+                else:
+                    logger.error(dict(
+                        n=n,
+                        dl_url=dl_url,
+                    ))
 
     def magnet_url(self, response):
         item = response.meta

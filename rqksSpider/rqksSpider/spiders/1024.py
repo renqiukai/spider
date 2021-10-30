@@ -13,7 +13,7 @@ from rqksSpider.items import ImagespiderItem
 
 
 class BtSpider(scrapy.Spider):
-    name = 'bt'
+    name = '1024'
     allowed_domains = ['1080pgqzz.info']
     start_urls = ['https://z1.1080pgqzz.info/pw/index.php']
     custom_settings = {

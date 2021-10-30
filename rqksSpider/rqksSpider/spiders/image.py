@@ -18,14 +18,12 @@ class BtSpider(scrapy.Spider):
     def __init__(self, parms=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fid = kwargs.get('fid')
-        self.max_page = kwargs.get('max_page')
-        if not self.max_page:
-            # 最大ID
-            self.max_page = 1000
+        self.min_page = kwargs.get('min_page', 1)
+        self.max_page = kwargs.get('max_page', 1000)
 
     def start_requests(self):
         page = 1
-        for page in range(1, int(self.max_page)):
+        for page in range(int(self.min_page), int(self.max_page)):
             url = f"{self.host_name}thread.php?fid={self.fid}&page={page}"
             logger.critical({
                 "msg": f"正在处理第{page}页",

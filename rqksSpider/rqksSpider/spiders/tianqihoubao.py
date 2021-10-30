@@ -3,8 +3,7 @@ import scrapy
 import logging
 import time
 import re
-
-logger = logging.getLogger(__name__)
+from loguru import logger
 
 
 class TianqihoubaoSpider(scrapy.Spider):
@@ -32,7 +31,7 @@ class TianqihoubaoSpider(scrapy.Spider):
         # 处理省份和城市
         dl_list = response.xpath("//div[@class='citychk']/dl")
         for dl in dl_list[:]:
-            item = weatherItem()
+            item = {}
             item["province_name"] = dl.xpath(
                 "./dt/a/b/text()").extract_first()
             item["province_name"] = item["province_name"].encode(
@@ -50,12 +49,12 @@ class TianqihoubaoSpider(scrapy.Spider):
                 yield scrapy.Request(
                     item["city_url"],
                     callback=self.parse_month,
-                    meta={"item": item}
+                    meta=item
                 )
 
     def parse_month(self, response):
         # 处理城市到月的页面
-        item = response.meta["item"]
+        item = response.meta
         ul_list = response.xpath("//div[@class='wdetail']/div/ul")
         for ul in ul_list:
             li_list = ul.xpath("./li")[1:]
@@ -72,14 +71,13 @@ class TianqihoubaoSpider(scrapy.Spider):
                 yield scrapy.Request(
                     item["month_url"],
                     callback=self.parse_date,
-                    meta={"item": item}
+                    meta=item
                 )
 
     def parse_date(self, response):
         # 处理城市到天的页面
-        item = response.meta["item"]
+        item = response.meta
         tr_list = response.xpath("//table/tr")[1:]
-        pattern = r""
         for tr in tr_list:
             url = tr.xpath("./td[1]/a/@href").extract_first()
             date_str = url.split(".")[0][-8:]
@@ -96,5 +94,5 @@ class TianqihoubaoSpider(scrapy.Spider):
                 "./td[3]/text()").extract_first().strip().replace(" ", "").replace("\r\n", "")
             item["wind_force"] = tr.xpath(
                 "./td[4]/text()").extract_first().strip().replace(" ", "").replace("\r\n", "")
-            logger.warn(item)
+            logger.success(item)
             yield item
