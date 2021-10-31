@@ -3,6 +3,14 @@ from loguru import logger
 from rqksSpider.items import ImagespiderItem
 
 
+image_type_list = {
+    106: "卡通漫画",
+    114: "欧美风情",
+    15: "网友自拍",
+    14: "唯美写真",
+}
+
+
 class BtSpider(scrapy.Spider):
     name = 'image'
     allowed_domains = ['f238605b.net']
@@ -17,7 +25,7 @@ class BtSpider(scrapy.Spider):
 
     def __init__(self, parms=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fid = kwargs.get('fid')
+        self.fid = int(kwargs.get('fid'))
         self.min_page = kwargs.get('min_page', 1)
         self.max_page = kwargs.get('max_page', 1000)
 
@@ -32,7 +40,7 @@ class BtSpider(scrapy.Spider):
             yield scrapy.Request(url=url, callback=self.parse)
 
     def parse(self, response):
-        item = ImagespiderItem()
+        item = {}
         rows = response.xpath(
             '//table[@id="ajaxtable"]//tr[@class="tr3 t_one"]/td/h3/a')
         for row in rows:
@@ -54,6 +62,7 @@ class BtSpider(scrapy.Spider):
         if "photo_url" not in item:
             item["photo_url"] = []
         item["tid"] = self.tid(item["url"])
+        item["image_type"] = image_type_list.get(self.fid)
         for img in imgs:
             img_url = img.xpath('@src').extract_first()
             item["photo_url"].append(img_url)

@@ -9,6 +9,7 @@ from itemadapter import ItemAdapter
 import scrapy
 from loguru import logger
 from pymongo import MongoClient
+from pymongo.errors import DuplicateKeyError
 
 
 class RqksspiderPipeline:
@@ -19,7 +20,11 @@ class RqksspiderPipeline:
 
     def process_item(self, item, spider):
         if spider.name == "image":
-            self.db["卡通漫画"].insert_one(item)
+            try:
+                self.db["images"].insert_one(item)
+            except DuplicateKeyError:
+                pass
+
         elif spider.name == "tianqihoubao":
             item.pop("_id") if "_id" in item else None
             self.db["tianqihoubao"].insert_one(item)
