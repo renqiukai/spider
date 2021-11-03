@@ -10,7 +10,12 @@ import scrapy
 from loguru import logger
 from pymongo import MongoClient
 from pymongo.errors import DuplicateKeyError
+from datetime import datetime
 
+
+def get_now_str():
+    dt = datetime.now()
+    return dt.strftime('%Y-%m-%d %H:%M:%S')
 
 class RqksspiderPipeline:
     def __init__(self) -> None:
@@ -21,6 +26,8 @@ class RqksspiderPipeline:
     def process_item(self, item, spider):
         if spider.name == "image":
             try:
+                item["create_time"] = get_now_str()
+                item["update_time"] = get_now_str()
                 self.db["images"].insert_one(item)
             except DuplicateKeyError:
                 pass
