@@ -1,0 +1,1 @@
+docker build -t cent:uvicorn_prod .
