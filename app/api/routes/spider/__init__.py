@@ -64,11 +64,8 @@ async def add(
         "spider_name": spider_name,
         "params": params,
     }
-    logger.debug(data)
-    _id = c.create(data)
-    result = c.read(_id)
+    result = c.create(data)
     result["_id"] = str(result["_id"])
-    logger.debug(result)
     return rqkResponse().sucess(message="创建成功", data=result)
 
 
@@ -77,5 +74,6 @@ async def delete(
     _id: str = Query(None, description="_id"),
 ):
     c = SpiderInfo()
-    c.delete(_id)
-    return rqkResponse().sucess(message="删除成功")
+    result = c.delete(_id)
+    result["_id"] = str(result["_id"])
+    return rqkResponse().sucess(message="删除成功",data=result)
