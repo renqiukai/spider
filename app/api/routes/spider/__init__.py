@@ -8,18 +8,31 @@ import pandas as pd
 from fastapi import (APIRouter, File, Query, UploadFile,
                      HTTPException, BackgroundTasks)
 from fastapi.responses import FileResponse, JSONResponse
+from requests.api import get
 from .models import SpiderInfo
 from app.core.logging import logger
 import json
 from app.api.models.response_base import rqkResponse
 import os
 from rqksSpider.rqksSpider.spiders.image import image_type_list
+from pywxwork.token import token
+from pywxwork.message import message
+from app.db.mongo_api import base,rqk
+
+
 router = APIRouter()
 
 
+class Images(base):
+    db_name = "spider"
+    collection_name = "images"
+    connection_string = rqk
 
-
-
+def get_token():
+    corpid = "wx1e49648e862a7758"
+    corpsecret = "H5MQZ36D1RjEfJCcS4VT8FlDezFpPk6t0lc4VkVZGwg"
+    t = token(corpid, corpsecret)
+    return t.token
 
 
 @router.get("/list", summary="爬虫列表",)
@@ -89,9 +102,15 @@ async def exec(
     # spider_name: str = Query(None, description="爬虫名字"),
     # params: str = Query(None, description="参数字符串"),
 ):
+    img = Images()
+    begin_num = img.collection.find().count()
     for fid, name in image_type_list.items():
         max_page = 10
         base_command = f"cd rqksSpider && scrapy crawl image  -a fid={fid} -a max_page={max_page}"
         logger.debug(base_command)
         os.system(base_command)
+    end_num = img.collection.find().count()
+    m = message(get_token())
+    content = f"爬虫成功(image),{begin_num}--{end_num}"
+    m.send_text(agentid=1, touser=['13801587423'], content=content)
     return rqkResponse().sucess(message="删除成功", data=[])

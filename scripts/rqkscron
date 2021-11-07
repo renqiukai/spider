@@ -1,2 +1,3 @@
 #00 06 * * * curl -X PUT "http://127.0.0.1:8000/api/code" -H "accept: application/json"
 #00 06 * * * curl -X GET "http://127.0.0.1:8000/api/vip/member_day_update" -H "accept: application/json"
+00 06 * * * curl -X 'GET' 'http://175.24.249.119:8001/api/spider/image/exec' -H 'accept: application/json'
