@@ -1,6 +1,5 @@
 import scrapy
 from loguru import logger
-from rqksSpider.items import ImagespiderItem
 
 
 image_type_list = {

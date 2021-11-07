@@ -12,7 +12,14 @@ from .models import SpiderInfo
 from app.core.logging import logger
 import json
 from app.api.models.response_base import rqkResponse
+import os
+from rqksSpider.rqksSpider.spiders.image import image_type_list
 router = APIRouter()
+
+
+
+
+
 
 
 @router.get("/list", summary="爬虫列表",)
@@ -52,8 +59,6 @@ async def info(
     return rqkResponse().sucess(message="查询成功", data=row)
 
 
-
-
 @router.post("/add", summary="增加",)
 async def add(
     spider_name: str = Query(..., description="spider_name"),
@@ -76,4 +81,17 @@ async def delete(
     c = SpiderInfo()
     result = c.delete(_id)
     result["_id"] = str(result["_id"])
-    return rqkResponse().sucess(message="删除成功",data=result)
+    return rqkResponse().sucess(message="删除成功", data=result)
+
+
+@router.get("/image/exec", summary="执行",)
+async def exec(
+    # spider_name: str = Query(None, description="爬虫名字"),
+    # params: str = Query(None, description="参数字符串"),
+):
+    for fid, name in image_type_list.items():
+        max_page = 10
+        base_command = f"cd rqksSpider && scrapy crawl image  -a fid={fid} -a max_page={max_page}"
+        logger.debug(base_command)
+        os.system(base_command)
+    return rqkResponse().sucess(message="删除成功", data=[])

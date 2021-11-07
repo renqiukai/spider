@@ -25,6 +25,7 @@ class GushiwenSpider(scrapy.Spider):
     def parse(self, response):
         poem_type_list = response.xpath(
             "//div[@class='main3']/div[2]/div[1]/div[2]/a")
+        logger.debug(poem_type_list)
         for poem_type in poem_type_list[-3:]:
             item = {}
             item["poem_type"] = poem_type.xpath('./text()').extract_first()
