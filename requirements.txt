@@ -17,4 +17,4 @@ jinja2
 python-jose
 scrapy
 pymongo
-pyworkwx
+pywxwork
