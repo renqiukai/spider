@@ -28,6 +28,7 @@ class RqksspiderPipeline:
             try:
                 item["create_time"] = get_now_str()
                 item["update_time"] = get_now_str()
+                item["delete_flag"] = 0
                 self.db["images"].insert_one(item)
             except DuplicateKeyError:
                 pass
@@ -40,6 +41,7 @@ class RqksspiderPipeline:
             try:
                 item["create_time"] = get_now_str()
                 item["update_time"] = get_now_str()
+                item["delete_flag"] = 0
                 self.db["jita"].insert_one(item)
             except DuplicateKeyError:
                 pass
