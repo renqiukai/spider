@@ -3,7 +3,6 @@
 # Don't forget to add your pipeline to the ITEM_PIPELINES setting
 # See: https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 
-
 # useful for handling different item types with a single interface
 from itemadapter import ItemAdapter
 import scrapy
@@ -24,6 +23,7 @@ class RqksspiderPipeline:
         self.db = self.client["spider"]
 
     def process_item(self, item, spider):
+        # db.jita.createIndex({tid:1},{unique:true}) 
         if spider.name == "image":
             try:
                 item["create_time"] = get_now_str()
@@ -35,6 +35,14 @@ class RqksspiderPipeline:
         elif spider.name == "tianqihoubao":
             item.pop("_id") if "_id" in item else None
             self.db["tianqihoubao"].insert_one(item)
+        elif spider.name == "jita":
+            item.pop("_id") if "_id" in item else None
+            try:
+                item["create_time"] = get_now_str()
+                item["update_time"] = get_now_str()
+                self.db["jita"].insert_one(item)
+            except DuplicateKeyError:
+                pass
         else:
             pass
         return item

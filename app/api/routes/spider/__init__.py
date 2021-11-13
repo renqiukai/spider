@@ -27,6 +27,10 @@ class Images(base):
     db_name = "spider"
     collection_name = "images"
     connection_string = rqk
+class Jita(base):
+    db_name = "spider"
+    collection_name = "jita"
+    connection_string = rqk
 
 def get_token():
     corpid = "wx1e49648e862a7758"
@@ -112,5 +116,23 @@ async def exec(
     end_num = img.collection.find().count()
     m = message(get_token())
     content = f"爬虫成功(image),{begin_num}--{end_num}"
+    m.send_text(agentid=1, touser=['13801587423'], content=content)
+    return rqkResponse().sucess(message="删除成功", data=[])
+
+@router.get("/jita/exec", summary="执行",)
+async def jita_exec(
+    min_page:int = Query(1),
+    max_page:int = Query(10),
+    # spider_name: str = Query(None, description="爬虫名字"),
+    # params: str = Query(None, description="参数字符串"),
+):
+    img = Jita()
+    begin_num = img.collection.find().count()
+    base_command = f"cd rqksSpider && scrapy crawl jita -a min_page={min_page} -a max_page={max_page}"
+    logger.debug(base_command)
+    os.system(base_command)
+    end_num = img.collection.find().count()
+    m = message(get_token())
+    content = f"爬虫成功(jita),{begin_num}--{end_num}"
     m.send_text(agentid=1, touser=['13801587423'], content=content)
     return rqkResponse().sucess(message="删除成功", data=[])
