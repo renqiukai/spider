@@ -1,26 +1,34 @@
+"""
+输入根目录
+
+1，当前目录取得所有的目录 文件
+2，是目录，返回1
+3，是文件，判断文件类型
+4，是图片，判断当前文件夹图片是否超过10张，如超过则表示为图片类型，记录图片地址
+
+"""
+
 import scrapy
 from loguru import logger
 from rqksSpider.items import ImagespiderItem
 from scrapy.utils.response import get_base_url
 import urllib.parse
-image_type_list = {
-    14: "唯美写真",
-    15: "网友自拍",
-    16: "露出激情",
-    49: "街拍偷拍",
-    21: "丝袜美腿",
-    106: "卡通漫画",
-    114: "欧美风情",
-}
 
-image_type_name = ["jpg","jpeg","png"]
-video_type_name = ["mp4","mpeg","mkv"]
+
+def get_file_type(file_type_str):
+    file_type = dict(
+        image=["jpg", "jpeg", "png"],
+        video=["mp4", "mpeg", "mkv", "wmv"]
+    )
+    for k, v in file_type.items():
+        if file_type_str in v:
+            return k
 
 
 class ossSpider(scrapy.Spider):
     name = 'oss'
     allowed_domains = ['renqiukai.com']
-    start_urls = ['http://oss.renqiukai.com:11111/temp/']
+    start_urls = ['http://oss.renqiukai.com:11111/temp/s_20220128/']
     custom_settings = {
         'LOG_LEVEL': 'WARNING',
         "DEFAULT_REQUEST_HEADERS": {
@@ -32,41 +40,53 @@ class ossSpider(scrapy.Spider):
     def __init__(self, parms=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # self.fid = int(kwargs.get('fid'))
-        # self.min_page = kwargs.get('min_page', 1)
+        self.url = kwargs.get('url')
+        self.encoding = kwargs.get('encoding')
         # self.max_page = kwargs.get('max_page', 1000)
 
     def start_requests(self):
-        url = "http://oss.renqiukai.com:11111/temp/"
-        yield scrapy.Request(url=url, callback=self.parse)
+        if not self.url:
+            exit()
+        # logger.error(self.url)
+
+        yield scrapy.Request(url=self.url, callback=self.parse)
 
     def parse(self, response):
-        response.body.encoding('utf-8')
         rows = response.xpath('//a')
+        image_num = 0
         for row in rows:
             item = {}
             href = row.xpath("@href").extract_first()
             title = row.xpath("text()").extract_first()
             url = f"{get_base_url(response)}{href}"
-            # 字符集要把我弄死
-            item["title"] = title
-            # item["title_utf8"] = title.decode()
-            item["title_charset"] = urllib.parse.unquote(title)
-            
+
             item["href"] = href
             item["url"] = url
-            # logger.success(item)
-            if title == "..":
+            if title == "../":
+                # 上一级
                 continue
             if href[-1] != "/":
+                # 文件
+                encoding_url = urllib.parse.unquote(
+                url, encoding=self.encoding, errors="replace")
+                item["title"] = encoding_url.split("/")[-1]
                 item["file"] = url
                 item.pop("url")
                 item.pop("href")
-                logger.debug(item)
-                yield item
+                file_type_str = url.split(".")[-1]
+                file_type = get_file_type(file_type_str)
+                if file_type == "image":
+                    image_num += 1
+                if file_type == "video":
+                    print(url)
+                    yield item
             else:
+                # 目录
+                # pass
+                # logger.critical(item["url"])
                 yield scrapy.Request(
                     url=item["url"],
                     meta=item,
                     callback=self.parse,
                 )
-
+            # logger.error(item)

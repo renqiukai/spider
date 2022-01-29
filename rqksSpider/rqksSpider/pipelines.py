@@ -10,7 +10,14 @@ from loguru import logger
 from pymongo import MongoClient
 from pymongo.errors import DuplicateKeyError
 from datetime import datetime
+import requests
+from .models import Video
 
+def get_video_size(url):
+    response = requests.head(url)
+    size = response.headers['content-length']
+    size = int(size)
+    return size
 
 def get_now_str():
     dt = datetime.now()
@@ -36,6 +43,25 @@ class RqksspiderPipeline:
         elif spider.name == "tianqihoubao":
             item.pop("_id") if "_id" in item else None
             self.db["tianqihoubao"].insert_one(item)
+        elif spider.name == "oss":
+            # 先判断文件大小
+            video_url = item["file"]
+            title = item["title"]
+            video_size = get_video_size(video_url)
+            print(video_size)
+            if video_size >=100000000:
+                # 添加
+                c = Video()
+                data = {
+                    "title": title,
+                    "video_url": video_url,
+                    "delete_flag": 0,
+                }
+                data = c.create(data)
+                item["response"] = data
+                logger.debug(item)
+            
+
         elif spider.name == "jita":
             item.pop("_id") if "_id" in item else None
             try:

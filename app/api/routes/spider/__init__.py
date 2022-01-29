@@ -17,7 +17,7 @@ import os
 from rqksSpider.rqksSpider.spiders.image import image_type_list
 from pywxwork.token import token
 from pywxwork.message import message
-from app.db.mongo_api import base,rqk
+from app.db.mongo_api import base, rqk
 
 
 router = APIRouter()
@@ -27,10 +27,13 @@ class Images(base):
     db_name = "spider"
     collection_name = "images"
     connection_string = rqk
+
+
 class Jita(base):
     db_name = "spider"
     collection_name = "jita"
     connection_string = rqk
+
 
 def get_token():
     corpid = "wx1e49648e862a7758"
@@ -119,10 +122,11 @@ async def exec(
     m.send_text(agentid=1, touser=['13801587423'], content=content)
     return rqkResponse().sucess(message="删除成功", data=[])
 
+
 @router.get("/jita/exec", summary="执行",)
 async def jita_exec(
-    min_page:int = Query(1),
-    max_page:int = Query(10),
+    min_page: int = Query(1),
+    max_page: int = Query(10),
     # spider_name: str = Query(None, description="爬虫名字"),
     # params: str = Query(None, description="参数字符串"),
 ):
@@ -135,4 +139,15 @@ async def jita_exec(
     m = message(get_token())
     content = f"爬虫成功(jita),{begin_num}--{end_num}"
     m.send_text(agentid=1, touser=['13801587423'], content=content)
+    return rqkResponse().sucess(message="删除成功", data=[])
+
+
+@router.get("/oss/exec", summary="执行",)
+async def jita_exec(
+    url: str = Query(...),
+    encoding: str = Query("utf8"),
+):
+    base_command = f"cd rqksSpider && scrapy crawl oss -a url={url} -a encoding={encoding}"
+    logger.debug(base_command)
+    os.system(base_command)
     return rqkResponse().sucess(message="删除成功", data=[])
